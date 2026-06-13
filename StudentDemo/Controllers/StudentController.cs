@@ -33,7 +33,7 @@ namespace StudentManagement.Controllers
 
             return Ok("Student Added Successfully");
         }
-
+        // Update an existing student data
         [HttpPut("{id}")]
         public IActionResult UpdateStudent(int id, [FromBody] Student student)
         {
