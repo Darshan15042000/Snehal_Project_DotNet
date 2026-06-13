@@ -55,5 +55,22 @@ namespace StudentManagement.Controllers
         }
 
 
+        [HttpDelete("{id}")]
+        public IActionResult DeleteStudent(int id)
+        {
+            var existingStudent = _context.Students.Find(id);
+
+            if (existingStudent == null)
+            {
+                return NotFound("Student not found");
+            }
+
+            _context.Students.Remove(existingStudent);
+            _context.SaveChanges();
+
+            return Ok("Student Deleted Successfully");
+        }
+
+
     }
 }
