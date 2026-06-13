@@ -34,6 +34,26 @@ namespace StudentManagement.Controllers
             return Ok("Student Added Successfully");
         }
 
+        [HttpPut("{id}")]
+        public IActionResult UpdateStudent(int id, [FromBody] Student student)
+        {
+            var existingStudent = _context.Students.Find(id);
+
+            if (existingStudent == null)
+            {
+                return NotFound("Student not found");
+            }
+
+            existingStudent.Name = student.Name;
+            existingStudent.Age = student.Age;
+            existingStudent.Email = student.Email;
+            existingStudent.Password = student.Password;
+
+            _context.SaveChanges();
+
+            return Ok(existingStudent);
+        }
+
 
     }
 }
