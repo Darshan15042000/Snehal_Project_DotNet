@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;  
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;  
 using StudentDemo.Data;
+using StudentDemo.DTO;
 using StudentDemo.Models;
 
 
@@ -9,11 +11,14 @@ namespace StudentManagement.Controllers
     [Route("api/[controller]")]
     public class StudentController : ControllerBase
     {
-        private readonly AppDbContext _context;  
+        private readonly AppDbContext _context;
 
-        public StudentController(AppDbContext context)
+        private readonly IMapper _mapper;
+
+        public StudentController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -21,21 +26,25 @@ namespace StudentManagement.Controllers
         {
             var students = _context.Students.ToList();
 
-            return Ok(students);
+            var result = _mapper.Map<List<StudentDTO>>(students);
+
+            return Ok(result);
         }
 
 
         [HttpPost]
-        public IActionResult AddStudent(Student student)
+        public IActionResult AddStudent(CreateStudentDTO dto)
         {
+            var student = _mapper.Map<Student>(dto);
+
             _context.Students.Add(student);
             _context.SaveChanges();
 
-            return Ok("Student Added Successfully");
+            return Ok(student);
         }
         // Update an existing student data
         [HttpPut("{id}")]
-        public IActionResult UpdateStudent(int id, [FromBody] Student student)
+        public IActionResult UpdateStudent(int id, [FromBody] UpdateStudentDTO dto)
         {
             var existingStudent = _context.Students.Find(id);
 
@@ -44,10 +53,7 @@ namespace StudentManagement.Controllers
                 return NotFound("Student not found");
             }
 
-            existingStudent.Name = student.Name;
-            existingStudent.Age = student.Age;
-            existingStudent.Email = student.Email;
-            existingStudent.Password = student.Password;
+            _mapper.Map(dto, existingStudent);
 
             _context.SaveChanges();
 
