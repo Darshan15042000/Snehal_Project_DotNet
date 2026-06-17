@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;  
 using StudentDemo.Data;
 using StudentDemo.DTO;
@@ -21,9 +22,27 @@ namespace StudentManagement.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [Authorize]
+        [HttpGet("/TestApi")]
+        public IActionResult TestApi()
+        {
+            return Ok("Only Logged In Users Can Access");
+        }
+
+        [Authorize]
+        [HttpGet("getStudents")]
         public IActionResult GetStudents()
         {
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+            if (role != "Admin")
+            {
+                return StatusCode(403, new
+                {
+                    Message = "Access Denied. Only Admin can access this API."
+                });
+            }
+
             var students = _context.Students.ToList();
 
             var result = _mapper.Map<List<StudentDTO>>(students);
@@ -31,7 +50,7 @@ namespace StudentManagement.Controllers
             return Ok(result);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddStudent(CreateStudentDTO dto)
         {
@@ -42,6 +61,8 @@ namespace StudentManagement.Controllers
 
             return Ok(student);
         }
+
+        [Authorize(Roles = "Admin")]
         // Update an existing student data
         [HttpPut("{id}")]
         public IActionResult UpdateStudent(int id, [FromBody] UpdateStudentDTO dto)
@@ -60,7 +81,7 @@ namespace StudentManagement.Controllers
             return Ok(existingStudent);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteStudent(int id)
         {
