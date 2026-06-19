@@ -6,10 +6,10 @@ using StudentDemo.DTO;
 using StudentDemo.Models;
 
 
-namespace StudentManagement.Controllers
+namespace StudentDemo.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/Admin")]
     public class StudentController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -29,9 +29,9 @@ namespace StudentManagement.Controllers
             return Ok("Only Logged In Users Can Access");
         }
 
-        [Authorize]
-        [HttpGet("getStudents")]
-        public IActionResult GetStudents()
+        [Authorize(Roles = "Admin")]
+        [HttpGet("getUserData")]
+        public IActionResult GetUserData()
         {
             var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
 
@@ -45,18 +45,19 @@ namespace StudentManagement.Controllers
 
             var students = _context.Students.ToList();
 
-            var result = _mapper.Map<List<StudentDTO>>(students);
+            var result = _mapper.Map<List<AdminDTO>>(students);
 
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]  
         [HttpPost]
         public IActionResult AddStudent(CreateStudentDTO dto)
         {
-            var student = _mapper.Map<Student>(dto);
+            var student = _mapper.Map<Admin>(dto);
 
             _context.Students.Add(student);
+
             _context.SaveChanges();
 
             return Ok(student);

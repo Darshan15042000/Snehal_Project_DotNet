@@ -8,11 +8,11 @@ namespace StudentDemo.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<Student, StudentDTO>();
+            CreateMap<Admin, AdminDTO>();
 
-            CreateMap<CreateStudentDTO, Student>();
+            CreateMap<CreateStudentDTO, Admin>();
 
-            CreateMap<UpdateStudentDTO, Student>();
+            CreateMap<UpdateStudentDTO, Admin>();
         }
     }
 }
