@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StudentDemo.Data;
+using StudentDemo.Services;
 
 namespace StudentDemo
 {
@@ -41,6 +42,9 @@ namespace StudentDemo
                                     builder.Configuration["Jwt:Key"]))
                         };
                 });
+
+            builder.Services.AddScoped<IDeveloperService, DeveloperServices>();
+            builder.Services.AddScoped<ISupportClientService, SupportClientService>();
 
             builder.Services.AddAuthorization();
 

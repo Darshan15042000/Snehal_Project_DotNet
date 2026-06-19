@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudentDemo.Data;
+using StudentDemo.DTO;
 using StudentDemo.Models;
+using StudentDemo.Services;
 //using StudentDemo.Services;
 
 namespace StudentDemo.Controllers
@@ -12,17 +14,43 @@ namespace StudentDemo.Controllers
     {
         private readonly JwtService _jwtService;
         private readonly AppDbContext _context;
+        private readonly ISupportClientService _service;
+       
+        private readonly IDeveloperService _devService;
 
+        //Dependency Injection (Constructor Based)
         public AuthController(
             JwtService jwtService,
-            AppDbContext context)
+            AppDbContext context,
+            ISupportClientService service,
+            IDeveloperService devService)
         {
             _jwtService = jwtService;
             _context = context;
+            _service = service;
+            _devService = devService;
+        }
+        [HttpPost("/register_for_support")]
+        public async Task<IActionResult> Register(
+            SupportClientRegisterDTO dto)
+        {
+            var result = await _service.RegisterClient(dto);
+
+            return Ok(result);
+        }
+
+
+        [HttpPost("register_for_Developer")]
+        public async Task<IActionResult> Register(
+            [FromBody] DeveloperDTO dto)
+        {
+            var result = await _devService.RegisterDeveloper(dto);
+
+            return Ok(result);
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(Student student)
+        public async Task<IActionResult> Register(Admin student)
         {
             var existingUser = await _context.Students
                 .FirstOrDefaultAsync(x => x.Email == student.Email);
